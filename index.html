@@ -1,304 +1,212 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Memo</title>
-<meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1a18" media="(prefers-color-scheme: dark)">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Daily Memo">
-<link rel="manifest" href="manifest.json">
-<style>
-  :root {
-    --bg: #f7f7f5;
-    --surface: #ffffff;
-    --border: #e0ddd8;
-    --text-primary: #1a1a18;
-    --text-secondary: #6b6b68;
-    --text-placeholder: #b0aea8;
-    --accent: #2563eb;
-    --accent-hover: #1d4ed8;
-    --btn-clear-bg: #ffffff;
-    --btn-clear-border: #d0cdc8;
-    --btn-clear-hover: #f0ede8;
-    --btn-clear-text: #444442;
-    --error: #dc2626;
-    --success: #16a34a;
-    --disabled-bg: #e8e6e1;
-    --disabled-text: #a0a09a;
-    --shadow: 0 1px 4px rgba(0,0,0,0.08);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1a1a18;
-      --surface: #252523;
-      --border: #3a3a38;
-      --text-primary: #f0eee8;
-      --text-secondary: #a0a09a;
-      --text-placeholder: #606060;
-      --accent: #3b82f6;
-      --accent-hover: #60a5fa;
-      --btn-clear-bg: #2e2e2c;
-      --btn-clear-border: #4a4a48;
-      --btn-clear-hover: #3a3a38;
-      --btn-clear-text: #d0cec8;
-      --error: #f87171;
-      --success: #4ade80;
-      --disabled-bg: #2e2e2c;
-      --disabled-text: #606060;
-      --shadow: 0 1px 4px rgba(0,0,0,0.3);
-    }
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日記入力システム</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f5f7fa" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="icon-192.png">
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <style>
+        /* カラーパレットの定義（ライトモード） */
+        :root {
+            --bg-color: #f5f7fa;
+            --text-color: #333333;
+            --input-bg: #ffffff;
+            --border-color: #ced4da;
+            --btn-post-bg: #0d6efd;
+            --btn-post-text: #ffffff;
+            --btn-post-disabled: #a5c7fe;
+            --btn-clear-bg: #6c757d;
+            --btn-clear-disabled: #c6cace;
+            --sys-msg-error: #dc3545;
+            --sys-msg-success: #198754;
+        }
 
-  body {
-    background: var(--bg);
-    color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-    min-height: 100dvh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 48px 16px 64px;
-  }
+        /* ダークモード時の上書き */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --text-color: #e0e0e0;
+                --input-bg: #1e1e1e;
+                --border-color: #444444;
+                --btn-post-bg: #3d8bfd;
+                --btn-post-disabled: #1d3e75;
+                --btn-clear-bg: #5c636a;
+                --btn-clear-disabled: #32363a;
+                --sys-msg-error: #ff6b6b;
+                --sys-msg-success: #479f76;
+            }
+        }
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    padding: 28px 24px;
-    width: 100%;
-    max-width: 560px;
-  }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-  .header {
-    margin-bottom: 20px;
-  }
-  .header h1 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: -0.3px;
-  }
-  .header .date {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 3px;
-  }
+        textarea {
+            width: 100%;
+            height: 200px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: vertical;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-  textarea {
-    width: 100%;
-    min-height: 160px;
-    resize: vertical;
-    padding: 14px 16px;
-    font-family: inherit;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text-primary);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    outline: none;
-    transition: border-color 0.15s;
-    -webkit-appearance: none;
-  }
-  textarea::placeholder {
-    color: var(--text-placeholder);
-    font-size: 14px;
-  }
-  textarea:focus {
-    border-color: var(--accent);
-  }
+        .controls {
+            display: flex;
+            justify-content: flex-start;
+            gap: 12px;
+            margin-top: 12px;
+        }
 
-  .btn-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-  }
+        button {
+            padding: 10px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
 
-  button {
-    padding: 9px 20px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.15s, opacity 0.15s, color 0.15s;
-    white-space: nowrap;
-    -webkit-appearance: none;
-  }
+        #postBtn {
+            background-color: var(--btn-post-bg);
+            color: var(--btn-post-text);
+        }
 
-  #btn-submit {
-    background: var(--accent);
-    color: #fff;
-  }
-  #btn-submit:hover:not(:disabled) {
-    background: var(--accent-hover);
-  }
-  #btn-submit:disabled {
-    background: var(--disabled-bg);
-    color: var(--disabled-text);
-    cursor: default;
-  }
+        #postBtn:disabled {
+            background-color: var(--btn-post-disabled);
+            cursor: not-allowed;
+        }
 
-  #btn-clear {
-    background: var(--btn-clear-bg);
-    color: var(--btn-clear-text);
-    border: 1px solid var(--btn-clear-border);
-  }
-  #btn-clear:hover:not(:disabled) {
-    background: var(--btn-clear-hover);
-  }
-  #btn-clear:disabled {
-    background: var(--disabled-bg);
-    color: var(--disabled-text);
-    border-color: transparent;
-    cursor: default;
-  }
+        #clearBtn {
+            background-color: var(--btn-clear-bg);
+            color: #ffffff;
+        }
 
-  #system-msg {
-    margin-top: 12px;
-    font-size: 13px;
-    line-height: 1.6;
-    min-height: 20px;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  #system-msg.success { color: var(--success); }
-  #system-msg.error   { color: var(--error); }
+        #clearBtn:disabled {
+            background-color: var(--btn-clear-disabled);
+            cursor: not-allowed;
+        }
 
-  @media (max-width: 400px) {
-    body { padding: 24px 12px 48px; }
-    .card { padding: 20px 16px; border-radius: 12px; }
-    textarea { font-size: 16px; }
-  }
-</style>
+        #systemMessage {
+            margin-top: 16px;
+            min-height: 24px;
+            white-space: pre-wrap;
+            font-weight: bold;
+        }
+
+        .error { color: var(--sys-msg-error); }
+        .success { color: var(--sys-msg-success); }
+    </style>
 </head>
 <body>
-<div class="card">
-  <div class="header">
-    <h1>Daily Memo</h1>
-    <div class="date" id="today-date"></div>
-  </div>
 
-  <textarea
-    id="memo-input"
-    placeholder="今日の出来事、気付き、メモなど...(Ctrl+Enterで投稿)"
-  ></textarea>
+    <textarea id="diaryInput" placeholder="今日の出来事、気付き、メモなど...(Ctrl+Enterで投稿)"></textarea>
+    
+    <div class="controls">
+        <button id="postBtn" disabled>投稿する</button>
+        <button id="clearBtn" disabled>クリア</button>
+    </div>
+    
+    <div id="systemMessage"></div>
 
-  <div class="btn-row">
-    <button id="btn-submit" disabled>投稿する</button>
-    <button id="btn-clear" disabled>クリア</button>
-  </div>
+    <script>
+        // ★ GASのWebアプリデプロイURLに書き換えてください ★
+        const GAS_WEB_APP_URL = 'YOUR_GAS_WEB_APP_URL_HERE'; 
 
-  <div id="system-msg"></div>
-</div>
+        const input = document.getElementById('diaryInput');
+        const postBtn = document.getElementById('postBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const sysMsg = document.getElementById('systemMessage');
 
-<script>
-  // ============================================================
-  // 設定: デプロイ後にCloudflare WorkerのURLに変更してください
-  // ============================================================
-  const WORKER_URL = "https://mu-diary.mute-develop.workers.dev";
-  // ============================================================
+        // ボタンの活性/非活性を切り替える
+        const updateBtnState = () => {
+            const hasText = input.value.trim().length > 0;
+            postBtn.disabled = !hasText;
+            clearBtn.disabled = !hasText;
+        };
 
-  const textarea   = document.getElementById("memo-input");
-  const btnSubmit  = document.getElementById("btn-submit");
-  const btnClear   = document.getElementById("btn-clear");
-  const systemMsg  = document.getElementById("system-msg");
-  const todayDate  = document.getElementById("today-date");
+        // 入力時のイベント
+        input.addEventListener('input', updateBtnState);
 
-  function pad(n) { return String(n).padStart(2, "0"); }
+        // Ctrl+Enterでの投稿イベント
+        input.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                if (!postBtn.disabled) executePost();
+            }
+        });
 
-  function getDateStr(d) {
-    return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())}`;
-  }
+        // クリアボタンのイベント
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            updateBtnState();
+            sysMsg.textContent = '';
+        });
 
-  function getNowStr() {
-    const d = new Date();
-    return `${getDateStr(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-  }
+        // 投稿処理
+        const executePost = async () => {
+            const text = input.value;
+            
+            postBtn.disabled = true;
+            postBtn.textContent = '処理中';
+            sysMsg.textContent = '';
+            sysMsg.className = '';
 
-  todayDate.textContent = getDateStr(new Date());
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ text: text })
+                });
 
-  function updateButtons() {
-    const hasText = textarea.value.trim().length > 0;
-    btnSubmit.disabled = !hasText;
-    btnClear.disabled  = !hasText;
-  }
+                const result = await response.json();
+                
+                if (result.success) {
+                    input.value = '';
+                    sysMsg.textContent = '投稿に成功しました。';
+                    sysMsg.className = 'success';
+                    postBtn.textContent = '投稿する';
+                    updateBtnState();
+                } else {
+                    throw new Error(result.error || '不明なエラーが発生しました。');
+                }
+            } catch (error) {
+                sysMsg.textContent = `投稿に失敗しました。\n【APIのエラーメッセージ】: ${error.message}`;
+                sysMsg.className = 'error';
+                postBtn.disabled = false;
+                postBtn.textContent = '投稿する';
+            }
+        };
 
-  function clearMsg() {
-    systemMsg.textContent = "";
-    systemMsg.className = "";
-  }
+        postBtn.addEventListener('click', executePost);
 
-  function showMsg(text, type) {
-    systemMsg.textContent = text;
-    systemMsg.className = type;
-  }
-
-  textarea.addEventListener("input", updateButtons);
-
-  textarea.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      if (!btnSubmit.disabled) btnSubmit.click();
-    }
-  });
-
-  btnClear.addEventListener("click", () => {
-    textarea.value = "";
-    updateButtons();
-  });
-
-  btnSubmit.addEventListener("click", async () => {
-    const text = textarea.value.trim();
-    if (!text) return;
-
-    btnSubmit.textContent = "処理中";
-    btnSubmit.disabled = true;
-    btnClear.disabled  = true;
-    clearMsg();
-
-    const timestamp = getNowStr();
-
-    try {
-      const res = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, timestamp }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || `HTTP ${res.status}`);
-      }
-
-      showMsg("投稿に成功しました。", "success");
-      textarea.value = "";
-      updateButtons();
-    } catch (err) {
-      showMsg(`投稿に失敗しました。\n${err.message}`, "error");
-      btnClear.disabled = textarea.value.trim().length === 0;
-    } finally {
-      btnSubmit.textContent = "投稿する";
-      btnSubmit.disabled = textarea.value.trim().length === 0;
-    }
-  });
-</script>
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js");
-    });
-  }
-</script>
+        // Service Workerの登録 (PWA用)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
